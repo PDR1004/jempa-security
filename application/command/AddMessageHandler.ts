@@ -5,7 +5,7 @@ export class AddMessageHandler {
 
     constructor() {
         this._groq = new Groq({
-            apiKey: "",
+            apiKey: "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",
         });
     }
 
