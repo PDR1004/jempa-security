@@ -1,11 +1,12 @@
 import Groq from "groq-sdk"
+import { environment } from "@/envConfig";
 
 export class AddMessageHandler {
     private _groq: Groq
 
     constructor() {
         this._groq = new Groq({
-            apiKey: "",
+            apiKey: environment.credentials.groq,
         });
     }
 
