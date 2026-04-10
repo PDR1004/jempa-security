@@ -1,10 +1,10 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginContent() {
   const { status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,7 +18,6 @@ export default function LoginPage() {
     }
   }, [router, status]);
 
-  // Despertar la página si el navegador la había congelado
   useEffect(() => {
     const handleWakeUp = () => setIsRedirecting(false);
     window.addEventListener("focus", handleWakeUp);
@@ -58,5 +57,13 @@ export default function LoginPage() {
         </button>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-zinc-950"><p>Cargando...</p></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
