@@ -5,12 +5,6 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  {                                                       //ini-evito el error de no-explicit-any
-    files: ["application/command/AddMessageHandler.ts"],
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-    },                                                    //fin- evito el error de no-explicit-any
-  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -19,6 +13,21 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+
+    // Custom rules:
+   {                                                       //evito el error de no-explicit-any
+    files: ["application/command/AddMessageHandler.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },                                                    
+  },
+  {                                                       //evito el error de no-empty-object-type
+    files: ["application/command/AddMessageHandler.ts"],
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "off",
+    },                                                    
+  },
+
 ]);
 
 export default eslintConfig;

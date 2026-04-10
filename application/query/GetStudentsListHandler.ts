@@ -1,8 +1,8 @@
 const HARDCODED_LIST = [
-    { id: 1, name: 'Juan Pérez', email: 'juan.perez@example.com', active: true },
-    { id: 2, name: 'María Gómez', email: 'maria.gomez@example.com', active: true },
-    { id: 3, name: 'Carlos López', email: 'carlos.lopez@example.com', active: true },
-    { id: 4, name: 'Ana Martínez', email: 'ana.martinez@example.com', active: true },
+    { id: 1, name: 'Pablo Racigh', email: 'pablodanielracigh@gmail.com', active: true },
+    { id: 2, name: 'Mateo Nuñez', email: 'mateenunez@gmail.com', active: true },
+    { id: 3, name: 'Aaron Tournoud ', email: 'carlos.lopez@example.com', active: true },
+    { id: 4, name: 'Ezequiel Martino', email: 'ana.martinez@example.com', active: true },
     { id: 5, name: 'Luis Fernández', email: 'luis.fernandez@example.com', active: true },
     { id: 6, name: 'Sofía Ramírez', email: 'sofia.ramirez@example.com', active: true },
     { id: 7, name: 'Diego Torres', email: 'diego.torres@example.com', active: true },
@@ -25,6 +25,7 @@ export class GetStudentsListHandler {
             email: student.email,
             active: student.active,
         }))
+        .sort((a, b) => a.name.localeCompare(b.name)) // orden alfabetico
 
         return { list: response }
     }
