@@ -1,5 +1,6 @@
 import { getServerAuthSession } from "@/auth";
 import { NextResponse } from "next/server";
+import { findRegisteredUserByEmail } from "@/app/lib/auth/registeredUsers";
 
 export interface AuthorizedSession {
   userId: string;
@@ -23,7 +24,18 @@ export const requireAuth = async (): Promise<
     };
   }
 
-  const role = session.user.role ?? "student";
+  const registeredUser = findRegisteredUserByEmail(session.user.email);
+  if (!registeredUser?.active) {
+    return {
+      success: false,
+      response: NextResponse.json(
+        { error: "Usuario no registrado o inactivo." },
+        { status: 403 },
+      ),
+    };
+  }
+
+  const role = registeredUser.role;
 
   return {
     success: true,

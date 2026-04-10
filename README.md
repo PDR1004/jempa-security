@@ -21,8 +21,6 @@ Asegúrate de tener instalado en tu computadora:
    - `AUTH_SECRET`
    - `AUTH_GOOGLE_ID`
    - `AUTH_GOOGLE_SECRET`
-   - `ADMIN_EMAILS`
-   - `TEACHER_EMAILS`
 
 2. **Instala las dependencias** del proyecto. Abre tu terminal en la carpeta raíz del proyecto y ejecuta:
 
@@ -48,7 +46,8 @@ Asegúrate de tener instalado en tu computadora:
 
 - Se integró Auth.js con proveedor Google (OIDC).
 - Endpoint de autenticación: `/api/auth/[...nextauth]`.
-- Sesión con estrategia JWT y rol calculado por email (`student`, `teacher`, `admin`).
+- Sesión con estrategia JWT y rol calculado por email (`student`, `teacher`, `admin`) usando la lista de usuarios registrados en `app/lib/auth/registeredUsers.ts`.
+- Solo pueden iniciar sesión los correos que existan en `app/lib/auth/registeredUsers.ts` y estén `active: true`.
 - La vista de login está disponible en `/login`.
 
 ### Autorización por Rol (RBAC - Role-Based Access Control)

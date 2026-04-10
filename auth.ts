@@ -1,6 +1,7 @@
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 import { resolveRoleByEmail } from "@/app/lib/auth/roleResolver";
+import { findRegisteredUserByEmail } from "@/app/lib/auth/registeredUsers";
 
 const requireEnv = (name: "AUTH_GOOGLE_ID" | "AUTH_GOOGLE_SECRET"): string => {
   const value = process.env[name];
@@ -26,8 +27,19 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user }) {
+      const registeredUser = findRegisteredUserByEmail(user.email);
+      return Boolean(registeredUser?.active);
+    },
     async jwt({ token, user }) {
       const email = user?.email ?? token.email;
+      const registeredUser = findRegisteredUserByEmail(email);
+
+      if (!registeredUser?.active) {
+        delete token.role;
+        return token;
+      }
+
       token.role = resolveRoleByEmail(email);
       return token;
     },
