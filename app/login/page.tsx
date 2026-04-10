@@ -1,18 +1,31 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/");
     }
   }, [router, status]);
+
+  // Despertar la página si el navegador la había congelado
+  useEffect(() => {
+    const handleWakeUp = () => setIsRedirecting(false);
+    window.addEventListener("focus", handleWakeUp);
+    return () => window.removeEventListener("focus", handleWakeUp);
+  }, []);
+
+  const handleLoginClick = () => {
+    setIsRedirecting(true);
+    signIn("google", { callbackUrl: "/" });
+  };
 
   return (
     <main className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4">
@@ -24,10 +37,15 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="mt-6 w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors"
+          disabled={isRedirecting}
+          onClick={handleLoginClick}
+          className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+            isRedirecting
+              ? "bg-zinc-500 text-zinc-200 cursor-not-allowed"
+              : "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          }`}
         >
-          Continuar con Google
+          {isRedirecting ? "Redirigiendo a Google..." : "Continuar con Google"}
         </button>
       </section>
     </main>

@@ -4,7 +4,7 @@ const HARDCODED_LIST = [
     { id: 3, name: 'Aaron Tournoud ', email: 'carlos.lopez@example.com', active: true },
     { id: 4, name: 'Ezequiel Martino', email: 'ana.martinez@example.com', active: true },
     { id: 5, name: 'Luis Fernández', email: 'luis.fernandez@example.com', active: true },
-    { id: 6, name: 'Sofía Ramírez', email: 'sofia.ramirez@example.com', active: true },
+    { id: 6, name: 'Juan Cruz', email: 'juanmartincruzrap@gmail.com', active: true },
     { id: 7, name: 'Diego Torres', email: 'diego.torres@example.com', active: true },
     { id: 8, name: 'Valentina Ruiz', email: 'valentina.ruiz@example.com', active: true },
     { id: 9, name: 'Pedro Sánchez', email: 'pedro.sanchez@example.com', active: true },

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -24,6 +25,28 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 
 export function Header() {
   const { data: session, status } = useSession();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // PLAN B: Forzar el "despertar" de la página si el usuario vuelve de Google
+  useEffect(() => {
+    const handleWakeUp = () => {
+      // Si el usuario vuelve a hacer foco en la pestaña, reactivamos los botones
+      setIsRedirecting(false);
+    };
+
+    window.addEventListener("focus", handleWakeUp);
+    document.addEventListener("visibilitychange", handleWakeUp);
+    
+    return () => {
+      window.removeEventListener("focus", handleWakeUp);
+      document.removeEventListener("visibilitychange", handleWakeUp);
+    };
+  }, []);
+
+  const handleLoginClick = () => {
+    setIsRedirecting(true); // Deshabilita el botón temporalmente para evitar doble clic
+    signIn("google", { callbackUrl: "/" });
+  };
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
@@ -57,10 +80,15 @@ export function Header() {
         ) : (
           <button
             type="button"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-            className="px-3 py-2 rounded-md text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-800 dark:text-zinc-900 dark:bg-zinc-100 dark:hover:bg-zinc-200 transition-colors"
+            disabled={isRedirecting}
+            onClick={handleLoginClick}
+            className={`px-3 py-2 rounded-md text-sm font-medium text-white transition-colors ${
+              isRedirecting 
+                ? "bg-zinc-500 cursor-not-allowed" 
+                : "bg-zinc-900 hover:bg-zinc-800 dark:text-zinc-900 dark:bg-zinc-100 dark:hover:bg-zinc-200"
+            }`}
           >
-            Iniciar sesion
+            {isRedirecting ? "Cargando..." : "Iniciar sesion"}
           </button>
         )}
       </div>
