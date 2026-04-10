@@ -2,12 +2,15 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const authError = searchParams.get("error");
+  const showAccessDenied = authError === "AccessDenied";
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -34,6 +37,12 @@ export default function LoginPage() {
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Usa tu cuenta OAuth/OIDC para entrar a Secure Campus IA.
         </p>
+
+        {showAccessDenied && (
+          <div className="mt-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+            Tu correo no esta autorizado para ingresar. Contacta a un administrador para ser habilitado.
+          </div>
+        )}
 
         <button
           type="button"
