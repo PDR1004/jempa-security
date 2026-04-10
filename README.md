@@ -9,22 +9,76 @@ Está diseñada con un enfoque _mobile-first_ para que se sienta como una aplica
 ## 🚀 Cómo empezar (Guía rápida)
 
 ### Requisitos previos
+
 Asegúrate de tener instalado en tu computadora:
+
 - Node.js (Se recomienda la versión 18 o superior).
 
 ### Instalación y ejecución
 
-1. **Instala las dependencias** del proyecto. Abre tu terminal en la carpeta raíz del proyecto y ejecuta:
+1. **Crea tu archivo de variables de entorno.** Copia `.env.example` a `.env.local` y completa:
+   - `GROQ_API_KEY`
+   - `AUTH_SECRET`
+   - `AUTH_GOOGLE_ID`
+   - `AUTH_GOOGLE_SECRET`
+
+2. **Instala las dependencias** del proyecto. Abre tu terminal en la carpeta raíz del proyecto y ejecuta:
+
    ```bash
    npm install
    ```
 
-2. **Inicia el servidor de desarrollo** localmente:
+3. **Inicia el servidor de desarrollo** localmente:
+
    ```bash
    npm run dev
    ```
 
-3. **Abre la aplicación:** Ve a tu navegador y entra a http://localhost:3000. ¡Deberías ver la interfaz del chat!
+4. **Abre la aplicación:** Ve a tu navegador y entra a http://localhost:3000. ¡Deberías ver la interfaz del chat!
+
+### Seguridad inicial del chat
+
+- La API key de Groq se lee desde `GROQ_API_KEY` y no está escrita en el código.
+- El chat incluye un system prompt académico que limita la IA a temas universitarios.
+- Si falta `GROQ_API_KEY`, la aplicación falla al arrancar para evitar ejecuciones inseguras.
+
+### Autenticación OAuth/OIDC (NextAuth/Auth.js)
+
+- Se integró Auth.js con proveedor Google (OIDC).
+- Endpoint de autenticación: `/api/auth/[...nextauth]`.
+- Sesión con estrategia JWT y rol calculado por email (`student`, `teacher`, `admin`) usando la lista de usuarios registrados en `app/lib/auth/registeredUsers.ts`.
+- Solo pueden iniciar sesión los correos que existan en `app/lib/auth/registeredUsers.ts` y estén `active: true`.
+- La vista de login está disponible en `/login`.
+
+### Autorización por Rol (RBAC - Role-Based Access Control)
+
+#### Punto 3a: Protección de API
+
+- El endpoint `/api/chat` valida sesión y rol antes de llamar Groq.
+- El endpoint `/api/student/list` solo permite `teacher` y `admin`.
+- Retorna **401 (Unauthorized)** si no hay sesión, **403 (Forbidden)** si el rol no tiene permisos.
+- Incluye headers de auditoría: `x-user-role` y `x-user-email`.
+
+#### Punto 3b: Protección de Rutas con Middleware
+
+- Archivo `middleware.ts` en la raíz valida sesión antes de acceder a `/students`.
+- Los `student` son redirigidos a `/` automáticamente.
+- Los no autenticados son redirigidos a `/login`.
+- El Header oculta el enlace a "Estudiantes" para usuarios sin permisos.
+
+#### Punto 3c: Protección a Nivel de Componente
+
+- La página `/students` separa lógica de servidor (validación) de cliente (UI).
+- Componente servidor `StudentsPage` rechaza acceso antes de renderizar.
+- Componente cliente `StudentsPageClient` solo renderiza para usuarios autorizados.
+
+**Matriz de Permisos:**
+| Acción | Student | Teacher | Admin |
+|--------|---------|---------|-------|
+| POST /api/chat | ✅ | ✅ | ✅ |
+| GET /api/student/list | ❌ | ✅ | ✅ |
+| Acceso a /students | ❌ | ✅ | ✅ |
+| Ver linkin "Estudiantes" | ❌ | ✅ | ✅ |
 
 ---
 

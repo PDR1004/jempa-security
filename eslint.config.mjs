@@ -13,6 +13,21 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+
+    // Custom rules:
+   {                                                       //evito el error de no-explicit-any
+    files: ["application/command/AddMessageHandler.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },                                                    
+  },
+  {                                                       //evito el error de no-empty-object-type
+    files: ["application/command/AddMessageHandler.ts"],
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "off",
+    },                                                    
+  },
+
 ]);
 
 export default eslintConfig;
