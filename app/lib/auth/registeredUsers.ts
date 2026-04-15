@@ -26,15 +26,15 @@ const REGISTERED_USERS: RegisteredUser[] = [
   {
     id: 3,
     name: "Aaron Tournoud",
-    email: "carlos.lopez@example.com",
+    email: "atournoudfrcu@gmail.com",
     role: "student",
     active: true,
   },
   {
     id: 4,
     name: "Ezequiel Martino",
-    email: "ana.martinez@example.com",
-    role: "student",
+    email: "ezee.martino23@gmail.com",
+    role: "teacher",
     active: true,
   },
   {

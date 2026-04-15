@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/app/Header";
 import { Providers } from "@/app/providers";
+import { ConditionalHeader } from "@/app/conditionalHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,9 +26,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <Header />
-          {children}
-        </Providers>
+      <ConditionalHeader />
+       {children}
+      </Providers>
       </body>
     </html>
   );
