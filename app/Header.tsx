@@ -4,6 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { Manrope } from "next/font/google";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -45,11 +51,11 @@ export function Header() {
 
   const handleLoginClick = () => {
     setIsRedirecting(true); // Deshabilita el botón temporalmente para evitar doble clic
-    signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl: "/chat" });
   };
 
   return (
-    <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full">
+    <header className={`${manrope.className} flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full`}>
       <div className="flex items-center gap-4">
         <h1
           translate="no"
@@ -58,7 +64,7 @@ export function Header() {
           Secure Campus IA
         </h1>
         <nav className="flex items-center gap-2">
-          <NavLink href="/">Chat</NavLink>
+          <NavLink href="/chat">Chat</NavLink>
             {status === "authenticated" && (session?.user?.role === "teacher" || session?.user?.role === "admin") && (
               <NavLink href="/students">Estudiantes</NavLink>
             )}
@@ -74,7 +80,7 @@ export function Header() {
             </div>
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: "/" })}
               className="px-3 py-2 rounded-md text-sm font-medium text-zinc-700 bg-zinc-100 hover:bg-zinc-200 dark:text-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors"
             >
               Cerrar sesion

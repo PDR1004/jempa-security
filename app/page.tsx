@@ -1,124 +1,193 @@
-"use client";
+import Link from "next/link";
+import { Manrope } from "next/font/google";
+import { redirect } from "next/navigation";
+import { getServerAuthSession } from "@/auth";
+import { ScrollReveal } from "@/app/components/ScrollReveal";
 
-import { useConversation } from '@/app/hooks/useConversation'
-import { useState, useRef, useEffect, FormEvent } from "react"
-import { useConversationStore, UserRole, Message } from '@/app/store/conversation'
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
-export default function Home() {
-  const { conversation, clearConversation } = useConversationStore() as any
-  const [inputValue, setInputValue] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+const features = [
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M7 11V8a5 5 0 1 1 10 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      </svg>
+    ),
+    title: "Control de Acceso",
+    description: "Gestion de usuarios por roles (Estudiante, Docente, Admin).",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+        <rect x="6" y="8" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M12 4v2M9.5 12h.01M14.5 12h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+    title: "Chat Inteligente",
+    description: "Asistente de IA para consultas academicas.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M5 19V6M10 19v-6M15 19v-9M20 19v-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+    title: "Gestion de Estudiantes",
+    description: "Visualizacion y administracion de alumnos.",
+  },
+];
 
-  // Auto-scroll al final cuando hay nuevos mensajes
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [conversation, isLoading])
+const steps = ["Iniciar sesion", "Acceder segun tu rol", "Usar las funcionalidades"];
 
-  const { addMessageConversation } = useConversation()
+export default async function Home() {
+  const session = await getServerAuthSession();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!inputValue.trim() || isLoading) return
-
-    setIsLoading(true)
-
-    try {
-      await addMessageConversation(inputValue.trim())
-      setInputValue("")
-    } catch (error) {
-      console.error("Error al obtener la respuesta de la IA:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  };
+  if (session?.user?.email) {
+    redirect("/chat");
+  }
 
   return (
-    <main className="flex flex-col flex-1 items-center bg-zinc-50 font-sans dark:bg-zinc-950 h-full w-full overflow-hidden">
-      <div className="flex flex-col w-full max-w-3xl flex-1 bg-white dark:bg-zinc-900/50 shadow-sm border-x border-zinc-200 dark:border-zinc-800 overflow-hidden relative">
-        {/* Toolbar de Chat */}
-        {conversation.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-md z-10 shrink-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              {conversation.length} {conversation.length === 1 ? 'mensaje' : 'mensajes'}
-            </span>
-            <button
-              onClick={() => clearConversation?.()}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-950/30 dark:hover:text-red-400 dark:hover:border-red-900/50 transition-all focus:outline-none focus:ring-2 focus:ring-red-500/20 active:scale-95"
-              title="Limpiar conversación"
-              aria-label="Limpiar conversación"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-              </svg>
-              Limpiar chat
-            </button>
-          </div>
-        )}
+    <main className={`${manrope.className} relative flex-1 w-full overflow-y-auto bg-[#020813] text-zinc-100`}>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.22),transparent_55%)]"
+      />
 
-        {/* Área de Mensajes */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {conversation.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500 text-sm text-center">
-              Inicia la conversación enviando un mensaje.
-            </div>
-          ) : (
-            conversation.map((msg: Message) => (
-              <div
-                key={msg.id}
-                className={`flex w-full ${msg.role === UserRole.Teacher ? "justify-end" : "justify-start"}`}
+      <div className="relative mx-auto min-h-full w-full max-w-7xl px-4 sm:px-8 lg:px-12">
+        <header className="sticky top-0 z-20 border-b border-emerald-500/15 bg-[#020813]/90 backdrop-blur-md">
+          <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between">
+            <span className="inline-flex items-center gap-2.5 text-sm font-extrabold tracking-tight text-zinc-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-4 w-4 text-emerald-400"
+                aria-hidden="true"
               >
-                <div
-                  className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === UserRole.Teacher
-                      ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 rounded-br-sm"
-                      : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 rounded-bl-sm"
-                    }`}
-                >
-                  {msg.text}
-                </div>
-              </div>
-            ))
-          )}
+                <path
+                  d="M12 3.5 18.5 6v5.9c0 4.1-2.8 7.8-6.5 8.9-3.7-1.1-6.5-4.8-6.5-8.9V6L12 3.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>
+                SECURE CAMPUS <span className="text-emerald-400">IA</span>
+              </span>
+            </span>
+            <Link
+              href="/login"
+              className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-[#021209] transition hover:bg-emerald-400"
+            >
+              Iniciar sesion
+            </Link>
+          </div>
+        </header>
 
-          {isLoading && (
-            <div className="flex w-full justify-start">
-              <div className="max-w-[85%] px-4 py-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 rounded-bl-sm flex gap-1 items-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
-              </div>
+        <section className="mx-auto flex min-h-[74vh] w-full max-w-5xl flex-col items-center justify-center px-2 pt-8 text-center sm:pt-14">
+          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-semibold text-emerald-300">
+            Inteligencia Artificial para tu campus
+          </span>
+          <h1 className="mt-7 text-balance text-5xl font-bold leading-tight text-zinc-100 sm:text-7xl">
+            Secure Campus
+            <span className="block text-emerald-400">IA</span>
+          </h1>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-zinc-300 sm:text-lg">
+           Interactúa con un asistente virtual. Una plataforma diseñada con altos estándares de seguridad, autenticación y acceso basado en roles.
+          </p>
+          <div className="mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+            <Link
+              href="/login"
+              className="w-full rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-[#021209] transition hover:-translate-y-0.5 hover:bg-emerald-400 sm:w-auto"
+            >
+              Comenzar ahora
+            </Link>
+            <Link
+              href="/login"
+              className="w-full rounded-full border border-zinc-700 bg-[#081426] px-8 py-3 text-sm font-semibold text-zinc-100 transition hover:-translate-y-0.5 hover:border-zinc-500 sm:w-auto"
+            >
+              Ver demo
+            </Link>
+          </div>
+
+          <article className="mt-14 w-full max-w-2xl rounded-2xl border border-zinc-800/90 bg-[#081425]/70 p-4 shadow-[0_18px_60px_-24px_rgba(0,0,0,0.9)]">
+            <div className="mb-4 flex items-center gap-2 text-[11px] text-zinc-400">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+              <span className="ml-2">Secure Campus IA - Chat</span>
             </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            <div className="space-y-3">
+              <p className="ml-auto w-fit max-w-[90%] rounded-2xl rounded-tr-md bg-emerald-900/45 px-4 py-3 text-sm text-zinc-100">
+                ¿Cuáles son las correlativas necesarias para cursar AM2?
+              </p>
+              <p className="mr-auto max-w-[90%] rounded-2xl rounded-tl-md bg-zinc-800/75 px-4 py-3 text-sm text-zinc-100">
+                Para cursar AM2 necesitas tener cursado AM1 y Álgebra.
+              </p>
+            </div>
+          </article>
+        </section>
 
-        {/* Input de Mensaje */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 flex gap-2 shrink-0 z-20"
-        >
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Escribe un mensaje..."
-            className="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-500 transition-shadow"
-            disabled={isLoading}
-            suppressHydrationWarning
-          />
-          <button
-            type="submit"
-            disabled={!inputValue.trim() || isLoading}
-            className="p-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center aspect-square"
-            aria-label="Enviar mensaje"
-            suppressHydrationWarning
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 -ml-0.5">
-              <path d="M3.478 2.404a.75.75 0 00-.926.941l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.404z" />
-            </svg>
-          </button>
-        </form>
+        <section className="border-y border-zinc-900/80 py-20">
+          <div className="mx-auto w-full max-w-5xl text-center">
+            <h2 className="text-balance text-3xl font-bold text-zinc-100 sm:text-5xl">
+              Todo lo que necesitas para un campus <span className="text-emerald-400">mas seguro</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-zinc-400">
+              Innovación tecnológica con seguridad desde el diseño
+            </p>
+          </div>
+
+          <div className="mx-auto mt-12 grid w-full max-w-5xl gap-5 md:grid-cols-3">
+            {features.map((feature, index) => (
+              <ScrollReveal key={feature.title} delayMs={index * 120}>
+                <article className="rounded-2xl border border-zinc-800/90 bg-[#061426] px-6 py-7 transition hover:-translate-y-1 hover:border-emerald-500/50">
+                  <p className="inline-flex rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2 text-emerald-300" aria-hidden="true">
+                    {feature.icon}
+                  </p>
+                  <h3 className="mt-4 text-xl font-semibold text-zinc-100">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{feature.description}</p>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+        </section>
+
+        <section className="py-24">
+          <div className="mx-auto w-full max-w-3xl">
+            <h2 className="mb-14 text-center text-4xl font-bold text-zinc-100">
+              Como <span className="text-emerald-400">funciona</span>
+            </h2>
+            <div className="mx-auto flex max-w-2xl flex-col gap-10">
+              {steps.map((step, index) => (
+                <div key={step} className="flex items-start gap-5">
+                  <span className="text-4xl font-bold leading-none text-emerald-400">0{index + 1}</span>
+                  <div>
+                    <p className="text-2xl font-semibold text-zinc-100">{step}</p>
+                    <p className="mt-2 text-zinc-400">
+                      {index === 0 && "Accede con tus credenciales institucionales."}
+                      {index === 1 && "El sistema te asigna permisos automaticamente."}
+                      {index === 2 && "Usa chat, gestion de alumnos y mas funcionalidades."}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <footer className="border-t border-zinc-900 py-12 text-center">
+          <p className="text-sm font-semibold text-zinc-200">SECURE CAMPUS IA</p>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-400">
+            Inteligencia artificial al servicio de la universidad. Protege tu campus con tecnologia de
+            vanguardia.
+          </p>
+          <p className="mt-7 text-xs text-zinc-500">© 2026 Secure Campus IA. Todos los derechos reservados.</p>
+        </footer>
       </div>
     </main>
-  )
+  );
 }

@@ -3,6 +3,12 @@
 import { signIn, useSession } from "next-auth/react";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Manrope } from "next/font/google";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 function LoginContent() {
   const { status } = useSession();
@@ -29,36 +35,48 @@ function LoginContent() {
 
   const handleLoginClick = () => {
     setIsRedirecting(true);
-    signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl: "/chat" });
   };
 
 
   return (
-    <main className="flex flex-1 bg-black text-white">
+    <main className={`${manrope.className} relative flex flex-1 bg-[#020813] text-white`}>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[380px] bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.2),transparent_58%)]"
+      />
 
       {/* Columna izquierda */}
-      <div className="hidden md:flex flex-col justify-center px-16 w-1/2">
-        <h1 className="text-5xl font-bold leading-tight">
-          Secure Campus IA<br />
-          <span className="text-white"></span>
+      <div className="relative hidden md:flex w-1/2 flex-col justify-center px-16 lg:px-24">
+        <h1 className="text-6xl font-extrabold leading-tight tracking-tight text-zinc-100">
+          Control de Acceso 
+          <span className="mt-2 block text-emerald-400">Basado en Roles</span>
         </h1>
-        <p className="mt-6 text-zinc-400 text-lg max-w-md">
-          
+        <p className="mt-6 max-w-xl text-lg text-zinc-300">
+          Protegé tu campus universitario con un asistente de inteligencia artificial que responde en tiempo real y
+          ayuda a tomar mejores decisiones.
         </p>
       </div>
 
    
-      <div className="flex flex-1 items-center justify-center px-8">
-        <section className="w-full max-w-sm rounded-2xl border border-zinc-700 bg-zinc-900 p-8">
+      <div className="relative flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
+        <section className="w-full max-w-sm rounded-3xl border border-zinc-700/80 bg-zinc-900/90 p-8 shadow-[0_24px_70px_-32px_rgba(0,0,0,0.95)] backdrop-blur-md">
 
           
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center">
-              SCIA
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+                <path
+                  d="M12 3.5 18.5 6v5.9c0 4.1-2.8 7.8-6.5 8.9-3.7-1.1-6.5-4.8-6.5-8.9V6L12 3.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
           </div>
 
-          <h2 className="text-center text-xl font-semibold text-white">Bienvenido</h2>
+          <h2 className="text-center text-2xl font-extrabold tracking-tight text-zinc-100">Bienvenido</h2>
           <p className="text-center text-sm text-zinc-400 mt-1 mb-6">
      
           </p>
@@ -74,13 +92,13 @@ function LoginContent() {
               <label className="text-xs text-zinc-400 uppercase tracking-widest mb-1 block">
                 Correo Institucional
               </label>
-              <div className="flex items-center rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 focus-within:border-zinc-500">
+              <div className="flex items-center rounded-lg border border-zinc-700 bg-[#111a2a] px-3 py-2 focus-within:border-emerald-500/60">
                 <input
                   type="email"
                   placeholder="usuario@campus.edu"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-transparent text-sm text-white placeholder-zinc-500 outline-none"
+                  className="scia-input flex-1 text-sm text-zinc-100 placeholder-zinc-500 outline-none"
                 />
               </div>
             </div>
@@ -94,13 +112,13 @@ function LoginContent() {
                   ¿Olvidaste tu contraseña?
                 </span>
               </div>
-              <div className="flex items-center rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 focus-within:border-zinc-500">
+              <div className="flex items-center rounded-lg border border-zinc-700 bg-[#111a2a] px-3 py-2 focus-within:border-emerald-500/60">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="flex-1 bg-transparent text-sm text-white placeholder-zinc-500 outline-none"
+                  className="scia-input flex-1 text-sm text-zinc-100 placeholder-zinc-500 outline-none"
                 />
                 <button
                   type="button"
@@ -115,7 +133,7 @@ function LoginContent() {
            
             <button
               type="submit"
-              className="w-full rounded-lg bg-white text-black text-sm font-semibold py-3 mb-4 hover:bg-zinc-200 transition-colors"
+              className="mb-4 w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-[#021209] transition-colors hover:bg-emerald-400"
             >
               Entrar
             </button>
@@ -131,10 +149,10 @@ function LoginContent() {
             type="button"
             disabled={isRedirecting}
             onClick={handleLoginClick}
-            className={`w-full flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`w-full flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-[#111a2a] px-4 py-3 text-sm font-medium transition-colors ${
               isRedirecting
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-zinc-700"
+                : "hover:border-zinc-500 hover:bg-zinc-800"
             }`}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -159,7 +177,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="flex flex-1 items-center justify-center bg-black">
+      <div className={`${manrope.className} flex flex-1 items-center justify-center bg-[#020813]`}>
         <p className="text-white">Cargando...</p>
       </div>
     }>
