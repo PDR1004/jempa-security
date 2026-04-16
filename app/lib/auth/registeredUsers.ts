@@ -27,7 +27,7 @@ const REGISTERED_USERS: RegisteredUser[] = [
     id: 3,
     name: "Aaron Tournoud",
     email: "atournoudfrcu@gmail.com",
-    role: "student",
+    role: "admin",
     active: true,
   },
   {
