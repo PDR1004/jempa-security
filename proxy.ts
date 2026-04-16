@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { hasPermission } from "@/app/lib/auth/permissions";
 
 export const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
-  // Proteger ruta /students - solo teacher y admin
+  // Proteger ruta /students - solo los que tengan permiso view:students
   if (pathname.startsWith("/students")) {
     const token = await getToken({
       req: request,
@@ -19,8 +20,8 @@ export const proxy = async (request: NextRequest) => {
     const role =
       (token.role as "student" | "teacher" | "admin" | undefined) ?? "student";
 
-    // Si el usuario es student, redirigir a home
-    if (role === "student") {
+    // Validamos con el nuevo sistema de permisos
+    if (!hasPermission(role, "view:students")) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

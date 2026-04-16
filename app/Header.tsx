@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { hasPermission } from "@/app/lib/auth/permissions";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -12,11 +13,10 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link
       href={href}
-      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-        isActive
+      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
           ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-      }`}
+        }`}
     >
       {children}
     </Link>
@@ -36,7 +36,7 @@ export function Header() {
 
     window.addEventListener("focus", handleWakeUp);
     document.addEventListener("visibilitychange", handleWakeUp);
-    
+
     return () => {
       window.removeEventListener("focus", handleWakeUp);
       document.removeEventListener("visibilitychange", handleWakeUp);
@@ -59,7 +59,8 @@ export function Header() {
         </h1>
         <nav className="flex items-center gap-2">
           <NavLink href="/">Chat</NavLink>
-            {status === "authenticated" && (session?.user?.role === "teacher" || session?.user?.role === "admin") && (
+          {status === "authenticated" &&
+            hasPermission(session?.user?.role, "view:students") && (
               <NavLink href="/students">Estudiantes</NavLink>
             )}
         </nav>
@@ -85,11 +86,10 @@ export function Header() {
             type="button"
             disabled={isRedirecting}
             onClick={handleLoginClick}
-            className={`px-3 py-2 rounded-md text-sm font-medium text-white transition-colors ${
-              isRedirecting 
-                ? "bg-zinc-500 cursor-not-allowed" 
+            className={`px-3 py-2 rounded-md text-sm font-medium text-white transition-colors ${isRedirecting
+                ? "bg-zinc-500 cursor-not-allowed"
                 : "bg-zinc-900 hover:bg-zinc-800 dark:text-zinc-900 dark:bg-zinc-100 dark:hover:bg-zinc-200"
-            }`}
+              }`}
           >
             {isRedirecting ? "Cargando..." : "Iniciar sesion"}
           </button>
