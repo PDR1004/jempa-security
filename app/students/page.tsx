@@ -1,22 +1,11 @@
-import { getServerAuthSession } from "@/auth";
-import { redirect } from "next/navigation";
+import { validatePermission } from "@/app/lib/auth/authHelpers";
 import StudentsPageClient from "./client";
 
 async function StudentsPage() {
-  // Server-side validation: only teacher/admin can access
-  const session = await getServerAuthSession();
-  
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
 
-  const role = session.user.role ?? "student";
-  
-  if (role === "student") {
-    redirect("/");
-  }
+  await validatePermission("view:students");
 
-  // If authorized, render the client component
+
   return <StudentsPageClient />;
 }
 

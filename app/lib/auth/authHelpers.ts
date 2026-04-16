@@ -1,11 +1,14 @@
 import { getServerAuthSession } from "@/auth";
 import { NextResponse } from "next/server";
-import { findRegisteredUserByEmail } from "@/app/lib/auth/registeredUsers";
+import {
+  AppRole,
+  findRegisteredUserByEmail,
+} from "@/app/lib/auth/registeredUsers";
 
 export interface AuthorizedSession {
   userId: string;
   email: string;
-  role: "student" | "teacher" | "admin";
+  role: AppRole;
 }
 
 export const requireAuth = async (): Promise<
@@ -48,8 +51,30 @@ export const requireAuth = async (): Promise<
 };
 
 export const requireRole = (
-  userRole: string,
-  requiredRoles: ("student" | "teacher" | "admin")[],
+  userRole: AppRole,
+  requiredRoles: AppRole[],
 ): boolean => {
-  return requiredRoles.includes(userRole as "student" | "teacher" | "admin");
+  return requiredRoles.includes(userRole);
+};
+
+import { Permission, hasPermission } from "@/app/lib/auth/permissions";
+
+// --- Sistema de Permisos Escalable ---
+
+/**
+ * Helper para usar en Server Components o Actions.
+ * Lanza un error si el usuario no tiene el permiso.
+ */
+export const validatePermission = async (permission: Permission) => {
+  const auth = await requireAuth();
+
+  if (!auth.success) {
+    throw new Error("No autenticado");
+  }
+
+  if (!hasPermission(auth.session.role, permission)) {
+    throw new Error("No tienes permiso para realizar esta acción");
+  }
+
+  return auth.session;
 };
