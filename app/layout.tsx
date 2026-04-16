@@ -21,14 +21,14 @@ export default function RootLayout({
       className="h-[100dvh] antialiased overflow-hidden font-sans"
       suppressHydrationWarning
     >
-      <body 
+      <body
         className="h-full flex flex-col overflow-hidden"
         suppressHydrationWarning
       >
         <Providers>
-      <ConditionalHeader />
-       {children}
-      </Providers>
+          <ConditionalHeader />
+          {children}
+        </Providers>
       </body>
     </html>
   );
