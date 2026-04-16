@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Manrope } from "next/font/google";
+import { hasPermission } from "@/app/lib/auth/permissions";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -18,11 +19,10 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link
       href={href}
-      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-        isActive
+      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
           ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
           : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-      }`}
+        }`}
     >
       {children}
     </Link>
@@ -30,8 +30,10 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 };
 
 export function Header() {
+  const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const hideHeader = pathname === "/" || pathname === "/login";
 
   // PLAN B: Forzar el "despertar" de la página si el usuario vuelve de Google
   useEffect(() => {
@@ -42,7 +44,7 @@ export function Header() {
 
     window.addEventListener("focus", handleWakeUp);
     document.addEventListener("visibilitychange", handleWakeUp);
-    
+
     return () => {
       window.removeEventListener("focus", handleWakeUp);
       document.removeEventListener("visibilitychange", handleWakeUp);
@@ -53,6 +55,10 @@ export function Header() {
     setIsRedirecting(true); // Deshabilita el botón temporalmente para evitar doble clic
     signIn("google", { callbackUrl: "/chat" });
   };
+
+  if (hideHeader) {
+    return null;
+  }
 
   return (
     <header className={`${manrope.className} flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shrink-0 z-20 w-full`}>
@@ -65,7 +71,8 @@ export function Header() {
         </h1>
         <nav className="flex items-center gap-2">
           <NavLink href="/chat">Chat</NavLink>
-            {status === "authenticated" && (session?.user?.role === "teacher" || session?.user?.role === "admin") && (
+          {status === "authenticated" &&
+            hasPermission(session?.user?.role, "view:students") && (
               <NavLink href="/students">Estudiantes</NavLink>
             )}
         </nav>
@@ -91,11 +98,10 @@ export function Header() {
             type="button"
             disabled={isRedirecting}
             onClick={handleLoginClick}
-            className={`px-3 py-2 rounded-md text-sm font-medium text-white transition-colors ${
-              isRedirecting 
-                ? "bg-zinc-500 cursor-not-allowed" 
+            className={`px-3 py-2 rounded-md text-sm font-medium text-white transition-colors ${isRedirecting
+                ? "bg-zinc-500 cursor-not-allowed"
                 : "bg-zinc-900 hover:bg-zinc-800 dark:text-zinc-900 dark:bg-zinc-100 dark:hover:bg-zinc-200"
-            }`}
+              }`}
           >
             {isRedirecting ? "Cargando..." : "Iniciar sesion"}
           </button>

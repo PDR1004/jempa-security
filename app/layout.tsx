@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/app/Header";
 import { Providers } from "@/app/providers";
-import { ConditionalHeader } from "@/app/conditionalHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,14 +20,14 @@ export default function RootLayout({
       className="h-[100dvh] antialiased overflow-hidden font-sans"
       suppressHydrationWarning
     >
-      <body 
+      <body
         className="h-full flex flex-col overflow-hidden"
         suppressHydrationWarning
       >
         <Providers>
-      <ConditionalHeader />
-       {children}
-      </Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
