@@ -39,16 +39,16 @@ export default function ChatPage() {
   };
 
   return (
-    <main className={`${manrope.className} flex h-full w-full flex-1 flex-col items-center overflow-hidden bg-zinc-50 dark:bg-zinc-950`}>
-      <div className="relative flex h-full w-full max-w-3xl flex-1 flex-col overflow-hidden border-x border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+    <main className={`${manrope.className} flex h-full w-full flex-1 flex-col items-center overflow-hidden bg-[#020813] text-zinc-100`}>
+      <div className="relative flex h-full w-full max-w-3xl flex-1 flex-col overflow-hidden border-x border-zinc-900 bg-[#020813]/50">
         {conversation.length > 0 && (
-          <div className="z-10 flex shrink-0 items-center justify-between border-b border-zinc-100 bg-zinc-50/80 px-4 py-2 backdrop-blur-md dark:border-zinc-800/50 dark:bg-zinc-900/80">
-            <span className="text-xs font-medium tracking-tight text-zinc-500 dark:text-zinc-400">
+          <div className="z-10 flex shrink-0 items-center justify-between border-b border-emerald-500/15 bg-[#020813]/90 px-4 py-3 backdrop-blur-md">
+            <span className="text-xs font-medium tracking-tight text-emerald-400">
               {conversation.length} {conversation.length === 1 ? "mensaje" : "mensajes"}
             </span>
             <button
               onClick={() => clearConversation?.()}
-              className="flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium tracking-tight text-zinc-600 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-red-900/50 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+              className="flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium tracking-tight text-red-400 transition-all hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500/20 active:scale-95"
               title="Limpiar conversación"
               aria-label="Limpiar conversación"
             >
@@ -62,8 +62,13 @@ export default function ChatPage() {
 
         <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
           {conversation.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-center text-sm font-medium tracking-tight text-zinc-400 dark:text-zinc-500">
-              Inicia la conversación enviando un mensaje.
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-semibold text-emerald-300">
+                Secure Campus IA
+              </span>
+              <p className="mt-4 text-sm font-medium tracking-tight text-zinc-400">
+                Inicia la conversación enviando un mensaje.
+              </p>
             </div>
           ) : (
             conversation.map((msg: Message) => (
@@ -72,10 +77,10 @@ export default function ChatPage() {
                 className={`flex w-full ${msg.role === UserRole.Teacher ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium leading-relaxed tracking-tight sm:max-w-[75%] ${
+                  className={`max-w-[85%] px-4 py-3 text-sm font-medium leading-relaxed tracking-tight sm:max-w-[75%] ${
                     msg.role === UserRole.Teacher
-                      ? "rounded-br-sm bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
-                      : "rounded-bl-sm bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
+                      ? "rounded-2xl rounded-tr-md bg-emerald-900/45 text-zinc-100"
+                      : "rounded-2xl rounded-tl-md bg-zinc-800/75 text-zinc-100"
                   }`}
                 >
                   {msg.text}
@@ -86,10 +91,10 @@ export default function ChatPage() {
 
           {isLoading && (
             <div className="flex w-full justify-start">
-              <div className="flex max-w-[85%] items-center gap-1 rounded-2xl rounded-bl-sm bg-zinc-100 px-4 py-4 dark:bg-zinc-800">
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.3s]" />
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.15s]" />
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400" />
+              <div className="flex items-center gap-1 rounded-2xl rounded-tl-md bg-zinc-800/75 px-4 py-4">
+                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-400/60 [animation-delay:-0.3s]" />
+                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-400/60 [animation-delay:-0.15s]" />
+                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-400/60" />
               </div>
             </div>
           )}
@@ -98,21 +103,21 @@ export default function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="z-20 flex shrink-0 gap-2 border-t border-zinc-200 bg-white/80 p-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80"
+          className="z-20 flex shrink-0 gap-3 border-t border-emerald-500/15 bg-[#020813]/90 p-4 backdrop-blur-md"
         >
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="flex-1 rounded-full bg-zinc-100 px-5 py-3 text-sm font-medium tracking-tight text-zinc-900 transition-shadow focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 dark:focus:ring-zinc-500"
+            className="flex-1 rounded-full border border-zinc-800 bg-[#081426] px-5 py-3 text-sm font-medium tracking-tight text-zinc-100 transition-shadow focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 placeholder:text-zinc-500 disabled:opacity-50"
             disabled={isLoading}
             suppressHydrationWarning
           />
           <button
             type="submit"
             disabled={!inputValue.trim() || isLoading}
-            className="flex aspect-square items-center justify-center rounded-full bg-zinc-900 p-3 text-white transition-all hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="flex aspect-square items-center justify-center rounded-full bg-emerald-500 p-3 text-[#021209] transition-all hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Enviar mensaje"
             suppressHydrationWarning
           >

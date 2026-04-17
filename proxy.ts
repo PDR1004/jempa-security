@@ -36,7 +36,12 @@ export const proxy = async (request: NextRequest) => {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Content-Security-Policy", "frame-ancestors 'none';");
+
+  return response;
 };
 
 export const config = {
