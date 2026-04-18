@@ -1,0 +1,18 @@
+
+stages:
+  - security
+
+snyk_security_scan:
+  stage: security
+  image: node:20
+  
+  script:
+    - echo "Iniciando escaneo de seguridad con Snyk..."
+    - npm ci 
+    - npm install -g snyk # Hasta acá instala Snyk
+    - snyk test 
+    - snyk code test # Prueba el código
+  
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" 
+    - if: $CI_COMMIT_BRANCH == "main" 
