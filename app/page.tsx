@@ -105,12 +105,6 @@ export default async function Home() {
             >
               Comenzar ahora
             </Link>
-            <Link
-              href="/login"
-              className="w-full rounded-full border border-zinc-700 bg-[#081426] px-8 py-3 text-sm font-semibold text-zinc-100 transition hover:-translate-y-0.5 hover:border-zinc-500 sm:w-auto"
-            >
-              Ver demo
-            </Link>
           </div>
 
           <article className="mt-14 w-full max-w-2xl rounded-2xl border border-zinc-800/90 bg-[#081425]/70 p-4 shadow-[0_18px_60px_-24px_rgba(0,0,0,0.9)]">
