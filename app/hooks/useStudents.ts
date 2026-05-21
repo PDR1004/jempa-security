@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useStudentsStore } from '@/app/store/students'
+import { useStudentsStore, Student } from '@/app/store/students'
 import { useStudentApi } from '@/app/lib/clients/useStudentApi'
 
 export const useStudents = () => {
@@ -12,7 +12,7 @@ export const useStudents = () => {
         setStudents(response.list)
     }, [getStudentsList, setStudents])
 
-    const updateStudent = useCallback(async (student: any) => {
+    const updateStudent = useCallback(async (student: Student) => {
         await apiUpdateStudent(student)
         await fetchStudents() // Recargamos la lista tras la edición
     }, [apiUpdateStudent, fetchStudents])

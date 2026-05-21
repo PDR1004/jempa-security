@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         const result = await handler.handle({ id });
 
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error en API delete student:", error);
         return NextResponse.json(
             { error: error.message || "Error interno del servidor" },

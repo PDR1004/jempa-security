@@ -2,7 +2,7 @@
 
 import { useConversation } from "@/app/hooks/useConversation";
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { useConversationStore, UserRole, Message } from "@/app/store/conversation";
+import { useConversationStore, UserRole, Message, ConversationStore } from "@/app/store/conversation";
 import { Manrope } from "next/font/google";
 import { detectInjection } from "../utils/sanitize";
 
@@ -12,7 +12,7 @@ const manrope = Manrope({
 });
 
 export default function ChatPage() {
-  const { conversation, clearConversation } = useConversationStore() as any;
+  const { conversation, clearConversation } = useConversationStore() as ConversationStore;
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

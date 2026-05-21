@@ -5,9 +5,7 @@ import {
   GetStudentsListQuery,
 } from "@/application/query/GetStudentsListHandler";
 
-const getStudentsListQueryHandler = async (
-  _request: NextRequest,
-): Promise<NextResponse> => {
+const getStudentsListQueryHandler = async (): Promise<NextResponse> => {
   try {
     // Step 1: Validate authentication
     const session = await getServerAuthSession();

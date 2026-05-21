@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { validatePermission } from "@/app/lib/auth/authHelpers";
 import { UpdateStudentHandler } from "@/application/command/UpdateStudentHandler";
 
+
 export async function POST(req: Request) {
     try {
         // 1. Seguridad: Verificar permiso de edición
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error en API update student:", error);
         return NextResponse.json(
             { error: error.message || "Error interno del servidor" },

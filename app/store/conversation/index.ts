@@ -19,4 +19,4 @@ export const useConversationStore = create<ConversationStore>()(
 )
 
 export { UserRole }
-export type { Message }
+export type { Message, ConversationStore }
