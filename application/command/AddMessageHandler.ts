@@ -40,6 +40,8 @@ export class AddMessageHandler {
         completion.choices[0]?.message?.content?.trim() ||
         "No pude generar una respuesta.",
     };
+
+  
   }
 }
 
