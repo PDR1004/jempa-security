@@ -11,7 +11,7 @@ snyk_security_scan:
     - npm ci 
     - npm install -g snyk # Hasta acá instala Snyk
     - snyk test 
-    - snyk code test # Prueba el código
+    - snyk code test --commit-count=1 # Prueba el código del commit
   
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" 
