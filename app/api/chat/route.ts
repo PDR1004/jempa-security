@@ -4,6 +4,7 @@ import {
   AddMessageCommand,
 } from "@/application/command/AddMessageHandler";
 import { requireAuth, requireRole } from "@/app/lib/auth/authHelpers";
+import { detectInjection } from "@/app/utils/sanitize";
 
 const addMessageCommandHandler = async (
   request: NextRequest,
@@ -30,12 +31,43 @@ const addMessageCommandHandler = async (
       );
     }
 
-    // 3. Procesar el mensaje de IA
-    const handler = new AddMessageHandler();
+    // 3. Validar la entrada del mensaje
     const command: AddMessageCommand = await request.json();
+
+    if (!command?.message || typeof command.message !== "string") {
+      return NextResponse.json(
+        { error: "Input inválido" },
+        { status: 400 },
+      );
+    }
+
+    if (command.message.length > 500) {
+      return NextResponse.json(
+        { error: "Consulta demasiado larga" },
+        { status: 400 },
+      );
+    }
+
+    if (detectInjection(command.message)) {
+      console.warn("Intento sospechoso de inyección detectado", {
+        route: "/api/chat",
+        user: session.email,
+        role: session.role,
+        message: command.message,
+        timestamp: new Date().toISOString(),
+      });
+
+      return NextResponse.json(
+        { error: "Consulta no permitida" },
+        { status: 400 },
+      );
+    }
+
+    // 4. Procesar el mensaje de IA
+    const handler = new AddMessageHandler();
     const response = await handler.handle(command);
 
-    // 4. Devolver respuesta con headers de auditoría
+    // 5. Devolver respuesta con headers de auditoría
     return NextResponse.json(response, {
       headers: {
         "x-user-role": session.role,
@@ -50,5 +82,6 @@ const addMessageCommandHandler = async (
     );
   }
 };
+
 
 export const POST = addMessageCommandHandler;

@@ -4,6 +4,7 @@ import { useConversation } from "@/app/hooks/useConversation";
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { useConversationStore, UserRole, Message } from "@/app/store/conversation";
 import { Manrope } from "next/font/google";
+import { detectInjection } from "../utils/sanitize";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -14,6 +15,7 @@ export default function ChatPage() {
   const { conversation, clearConversation } = useConversationStore() as any;
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,13 +28,22 @@ export default function ChatPage() {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
+    if (detectInjection(inputValue)) {
+      setError("Consulta no permitida. Detectamos un patrón sospechoso.");
+      setTimeout(() => setError(null), 4000);
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
 
     try {
       await addMessageConversation(inputValue.trim());
       setInputValue("");
     } catch (error) {
       console.error("Error al obtener la respuesta de la IA:", error);
+      setError("Error al enviar el mensaje. Intenta nuevamente.");
+      setTimeout(() => setError(null), 4000);
     } finally {
       setIsLoading(false);
     }
@@ -105,15 +116,25 @@ export default function ChatPage() {
           onSubmit={handleSubmit}
           className="z-20 flex shrink-0 gap-3 border-t border-emerald-500/15 bg-[#020813]/90 p-4 backdrop-blur-md"
         >
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Escribe un mensaje..."
-            className="flex-1 rounded-full border border-zinc-800 bg-[#081426] px-5 py-3 text-sm font-medium tracking-tight text-zinc-100 transition-shadow focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 placeholder:text-zinc-500 disabled:opacity-50"
-            disabled={isLoading}
-            suppressHydrationWarning
-          />
+          <div className="flex-1">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Escribe un mensaje..."
+              className="w-full rounded-full border border-zinc-800 bg-[#081426] px-5 py-3 text-sm font-medium tracking-tight text-zinc-100 transition-shadow focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 placeholder:text-zinc-500 disabled:opacity-50"
+              disabled={isLoading}
+              suppressHydrationWarning
+            />
+            {error && (
+              <p className="mt-2 text-xs font-medium text-red-400 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
+                  <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                {error}
+              </p>
+            )}
+          </div>
           <button
             type="submit"
             disabled={!inputValue.trim() || isLoading}
