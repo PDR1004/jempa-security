@@ -25,9 +25,11 @@ export async function POST(req: Request) {
         return NextResponse.json(result);
     } catch (error: unknown) {
         console.error("Error en API delete student:", error);
+        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+        const isPermissionError = errorMessage === "No tienes permiso para realizar esta acción";
         return NextResponse.json(
-            { error: error.message || "Error interno del servidor" },
-            { status: error.message === "No tienes permiso para realizar esta acción" ? 403 : 500 }
+            { error: errorMessage },
+            { status: isPermissionError ? 403 : 500 }
         );
     }
 }

@@ -32,9 +32,14 @@ async function request<T>(url: string, options: RequestInit): Promise<T> {
     return response.json();
 }
 
-export const api = {
-    get: <T>(url: string) => request<T>(url, { method: 'GET' }),
-    post: <T>(url: string, body: unknown) => request<T>(url, { method: 'POST', body: JSON.stringify(body) }),
-    put: <T>(url: string, body?: unknown) => request<T>(url, { method: 'PUT', body: body ? JSON.stringify(body) : undefined }),
-    delete: <T>(url: string) => request<T>(url, { method: 'DELETE' }),
+export const api: {
+    get: <T,>(url: string) => Promise<T>
+    post: <T,>(url: string, body: unknown) => Promise<T>
+    put: <T,>(url: string, body?: unknown) => Promise<T>
+    delete: <T,>(url: string) => Promise<T>
+} = {
+    get: <T,>(url: string) => request<T>(url, { method: 'GET' }),
+    post: <T,>(url: string, body: unknown) => request<T>(url, { method: 'POST', body: JSON.stringify(body) }),
+    put: <T,>(url: string, body?: unknown) => request<T>(url, { method: 'PUT', body: body ? JSON.stringify(body) : undefined }),
+    delete: <T,>(url: string) => request<T>(url, { method: 'DELETE' }),
 }

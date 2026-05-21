@@ -8,15 +8,15 @@ import { Student } from '@/app/store/students'
 const BASE_URL = '/api/student/list'
 
 export const useStudentApi = () => {
-    const getStudentsList = useCallback(async (): Promise<GetStudentsListResponse> => {
+    const getStudentsList = useCallback<() => Promise<GetStudentsListResponse>>(async () => {
         return api.get<GetStudentsListResponse>(BASE_URL)
     }, [])
 
-    const updateStudent = useCallback(async (data: Student) => {
+    const updateStudent = useCallback<(data: Student) => Promise<unknown>>(async (data: Student) => {
         return api.post('/api/student/update', data)
     }, [])
 
-    const deleteStudent = useCallback(async (id: number) => {
+    const deleteStudent = useCallback<(id: number) => Promise<unknown>>(async (id: number) => {
         return api.post('/api/student/delete', { id })
     }, [])
 
