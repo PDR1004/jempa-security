@@ -4,7 +4,7 @@ export class GetStudentsListHandler {
   async handle(
     command: GetStudentsListQuery,
   ): Promise<GetStudentsListResponse> {
-    const response = getRegisteredUsers()
+    const response = (await getRegisteredUsers())
       .filter((user) => user.role === "student")
       .map((student) => ({
         id: student.id,
@@ -12,7 +12,7 @@ export class GetStudentsListHandler {
         email: student.email,
         active: student.active,
       }))
-      .sort((a, b) => a.name.localeCompare(b.name)); // orden alfabetico
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     return { list: response };
   }

@@ -27,7 +27,7 @@ export const requireAuth = async (): Promise<
     };
   }
 
-  const registeredUser = findRegisteredUserByEmail(session.user.email);
+  const registeredUser = await findRegisteredUserByEmail(session.user.email);
   if (!registeredUser?.active) {
     return {
       success: false,

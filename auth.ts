@@ -28,19 +28,38 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      const registeredUser = findRegisteredUserByEmail(user.email);
-      return Boolean(registeredUser?.active);
+      const email = user.email?.trim().toLowerCase();
+      if (!email) {
+        return false;
+      }
+
+      const registeredUser = await findRegisteredUserByEmail(email);
+
+      if (!registeredUser) {
+        console.warn(
+          `[auth] AccessDenied: no hay fila en public.users para "${email}". ` +
+            "Verificá que el correo de Google coincida exactamente y que exista en Supabase.",
+        );
+        return false;
+      }
+
+      if (!registeredUser.active) {
+        console.warn(`[auth] AccessDenied: usuario inactivo "${email}"`);
+        return false;
+      }
+
+      return true;
     },
     async jwt({ token, user }) {
       const email = user?.email ?? token.email;
-      const registeredUser = findRegisteredUserByEmail(email);
+      const registeredUser = await findRegisteredUserByEmail(email);
 
       if (!registeredUser?.active) {
         delete token.role;
         return token;
       }
 
-      token.role = resolveRoleByEmail(email);
+      token.role = await resolveRoleByEmail(email);
       return token;
     },
     async session({ session, token }) {

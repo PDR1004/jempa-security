@@ -3,10 +3,10 @@ import {
   findRegisteredUserByEmail,
 } from "@/app/lib/auth/registeredUsers";
 
-export const resolveRoleByEmail = (
+export const resolveRoleByEmail = async (
   email: string | null | undefined,
-): AppRole => {
-  const registeredUser = findRegisteredUserByEmail(email);
+): Promise<AppRole> => {
+  const registeredUser = await findRegisteredUserByEmail(email);
 
   if (!registeredUser) {
     return "student";
