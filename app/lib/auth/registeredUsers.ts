@@ -8,6 +8,8 @@ export interface RegisteredUser {
   email: string;
   role: AppRole;
   active: boolean;
+  detail?: string;
+  dni?: string;
 }
 
 interface UserRow {
@@ -16,9 +18,11 @@ interface UserRow {
   email: string;
   role: AppRole;
   active: boolean;
+  detail?: string;
+  dni?: string;
 }
 
-const USER_COLUMNS = "id, name, email, role, active";
+const USER_COLUMNS = "id, name, email, role, active, detail, dni";
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase();
 
@@ -28,6 +32,8 @@ const mapRow = (row: UserRow): RegisteredUser => ({
   email: row.email,
   role: row.role,
   active: row.active,
+  detail: row.detail ?? undefined,
+  dni: row.dni ?? undefined,
 });
 
 export const getRegisteredUsers = async (): Promise<RegisteredUser[]> => {
@@ -84,24 +90,72 @@ export const findRegisteredUserById = async (
 
 export const updateRegisteredUser = async (
   id: number,
-  patch: Pick<RegisteredUser, "name" | "email" | "active">,
+  patch: Pick<RegisteredUser, "name" | "email" | "active" | "detail" | "dni">,
 ): Promise<RegisteredUser> => {
-  const { data, error } = await supabaseAdmin
-    .from("users")
-    .update({
-      name: patch.name,
-      email: normalizeEmail(patch.email),
-      active: patch.active,
-    })
-    .eq("id", id)
-    .select(USER_COLUMNS)
-    .single();
+  const updateData: Record<string, unknown> = {
+    name: patch.name,
+    email: normalizeEmail(patch.email),
+    active: patch.active,
+  };
 
-  if (error) {
-    throw new Error(`No se pudo actualizar el usuario: ${error.message}`);
+  if (patch.detail !== undefined) {
+    updateData.detail = patch.detail;
   }
 
-  return mapRow(data);
+  if (patch.dni !== undefined) {
+    updateData.dni = patch.dni;
+  }
+
+  const executeUpdate = async (dataToUpdate: Record<string, unknown>) => {
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .update(dataToUpdate)
+      .eq("id", id)
+      .select(USER_COLUMNS)
+      .single();
+
+    if (error) {
+      const message =
+        typeof error === "object" && error !== null && "message" in error
+          ? String((error as { message?: unknown }).message ?? JSON.stringify(error))
+          : String(error);
+      throw new Error(message);
+    }
+
+    return data;
+  };
+
+  try {
+    const data = await executeUpdate(updateData);
+    return mapRow(data);
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message?: unknown }).message)
+        : String(error);
+
+    if (
+      patch.detail !== undefined &&
+      errorMessage.toLowerCase().includes("detail does not exist")
+    ) {
+      delete updateData.detail;
+      const data = await executeUpdate(updateData);
+      return mapRow(data);
+    }
+
+    if (
+      patch.dni !== undefined &&
+      errorMessage.toLowerCase().includes("dni does not exist")
+    ) {
+      delete updateData.dni;
+      const data = await executeUpdate(updateData);
+      return mapRow(data);
+    }
+
+    throw new Error(`No se pudo actualizar el usuario: ${errorMessage}`);
+  }
 };
 
 export const deleteRegisteredUser = async (id: number): Promise<void> => {

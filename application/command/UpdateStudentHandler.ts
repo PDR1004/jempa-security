@@ -15,6 +15,8 @@ export class UpdateStudentHandler {
       name: command.name,
       email: command.email,
       active: command.active,
+      detail: command.detail,
+      dni: command.dni,
     });
 
     return {
@@ -24,6 +26,8 @@ export class UpdateStudentHandler {
         name: updated.name,
         email: updated.email,
         active: updated.active,
+        detail: updated.detail,
+        dni: updated.dni,
       },
     };
   }
@@ -34,6 +38,8 @@ export interface UpdateStudentCommand {
   name: string;
   email: string;
   active: boolean;
+  detail?: string;
+  dni?: string;
 }
 
 export interface UpdateStudentResponse {
@@ -43,5 +49,7 @@ export interface UpdateStudentResponse {
     name: string;
     email: string;
     active: boolean;
+    detail?: string;
+    dni?: string;
   };
 }

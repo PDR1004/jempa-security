@@ -1,7 +1,7 @@
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
-import { resolveRoleByEmail } from "@/app/lib/auth/roleResolver";
-import { findRegisteredUserByEmail } from "@/app/lib/auth/registeredUsers";
+// 1. Importamos tu cliente seguro con la Service Key
+import { supabaseAdmin } from "@/app/lib/supabase/server"; 
 
 const requireEnv = (name: "AUTH_GOOGLE_ID" | "AUTH_GOOGLE_SECRET"): string => {
   const value = process.env[name];
@@ -33,9 +33,14 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      const registeredUser = await findRegisteredUserByEmail(email);
+      // 2. Usamos el admin para saltar el RLS de forma segura desde el backend
+      const { data: dbUser, error } = await supabaseAdmin
+        .from("users")
+        .select("active")
+        .eq("email", email)
+        .single();
 
-      if (!registeredUser) {
+      if (error || !dbUser) {
         console.warn(
           `[auth] AccessDenied: no hay fila en public.users para "${email}". ` +
             "Verificá que el correo de Google coincida exactamente y que exista en Supabase.",
@@ -43,25 +48,34 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      if (!registeredUser.active) {
+      if (!dbUser.active) {
         console.warn(`[auth] AccessDenied: usuario inactivo "${email}"`);
         return false;
       }
 
       return true;
     },
+    
     async jwt({ token, user }) {
       const email = user?.email ?? token.email;
-      const registeredUser = await findRegisteredUserByEmail(email);
+      if (!email) return token;
 
-      if (!registeredUser?.active) {
+      // 3. Traemos el rol y el estado activo directamente con la Service Key
+      const { data: dbUser } = await supabaseAdmin
+        .from("users")
+        .select("role, active")
+        .eq("email", email)
+        .single();
+
+      if (!dbUser?.active) {
         delete token.role;
         return token;
       }
 
-      token.role = await resolveRoleByEmail(email);
+      token.role = dbUser.role;
       return token;
     },
+    
     async session({ session, token }) {
       if (session.user) {
         session.user.role =

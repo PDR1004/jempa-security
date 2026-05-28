@@ -4,6 +4,7 @@ export type Permission =
     | "view:students"
     | "edit:students"
     | "delete:students"
+    | "view:student_dni"
     | "access:admin"
     | "use:ai_chat"
     | "view:academic_data";
@@ -13,6 +14,7 @@ export const ROLE_PERMISSIONS: Record<AppRole, Permission[]> = {
         "view:students",
         "edit:students",
         "delete:students",
+        "view:student_dni",
         "access:admin",
         "use:ai_chat",
         "view:academic_data",

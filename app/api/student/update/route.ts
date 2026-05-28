@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
         // 2. Obtener datos del body
         const body = await req.json();
-        const { id, name, email, active } = body;
+        const { id, name, email, active, detail, dni } = body;
 
         if (!id || !name || !email) {
             return NextResponse.json(
@@ -26,6 +26,8 @@ export async function POST(req: Request) {
             name,
             email,
             active,
+            detail,
+            dni,
         });
 
         return NextResponse.json(result);
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
         const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
         const isPermissionError = errorMessage === "No tienes permiso para realizar esta acción";
         return NextResponse.json(
-            { error: errorMessage },
+            { error: errorMessage, message: errorMessage },
             { status: isPermissionError ? 403 : 500 }
         );
     }

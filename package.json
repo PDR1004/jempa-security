@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@next/env": "^16.2.3",
-    "@supabase/supabase-js": "^2.106.1",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.106.2",
     "groq-sdk": "^1.1.1",
     "next": "^15.5.15",
     "next-auth": "^4.24.13",

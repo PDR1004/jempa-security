@@ -11,6 +11,8 @@ export class GetStudentsListHandler {
         name: student.name,
         email: student.email,
         active: student.active,
+        detail: student.detail,
+        dni: student.dni,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -29,4 +31,6 @@ export interface Student {
   name: string;
   email: string;
   active: boolean;
+  detail?: string;
+  dni?: string;
 }

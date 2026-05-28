@@ -5,6 +5,8 @@ import { useStudents } from "@/app/hooks/useStudents";
 import { useStudentsStore, Student } from "@/app/store/students";
 import { useSession } from "next-auth/react";
 import { hasPermission } from "@/app/lib/auth/permissions";
+import { StudentDetailEditor } from "./StudentDetailEditor";
+import { DniViewer } from "./DniViewer";
 
 export default function StudentsPageClient() {
   const { fetchStudents, updateStudent, removeStudent } = useStudents();
@@ -30,6 +32,7 @@ export default function StudentsPageClient() {
 
   const canEdit = hasPermission(session?.user?.role, "edit:students");
   const canDelete = hasPermission(session?.user?.role, "delete:students");
+  const canViewDni = hasPermission(session?.user?.role, "view:student_dni");
 
   const handleEdit = (student: Student) => {
     setEditingStudent(student);
@@ -45,6 +48,23 @@ export default function StudentsPageClient() {
     } catch (error) {
       console.error("Error deleting student:", error);
       alert("Hubo un error al intentar eliminar al estudiante.");
+    }
+  };
+
+  const handleSaveStudentDetail = async (id: number, detail: string) => {
+    const student = students.find((item) => item.id === id);
+    if (!student) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await updateStudent({ ...student, detail });
+    } catch (error) {
+      console.error("Error saving student detail:", error);
+      alert("Hubo un error al guardar el detalle del estudiante.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -97,7 +117,7 @@ export default function StudentsPageClient() {
                 <li key={student.id} className="p-4 sm:p-6 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                      <div className="shrink-0 h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
                         <span className="text-lg font-medium text-zinc-600 dark:text-zinc-300">
                           {student.name.charAt(0).toUpperCase()}
                         </span>
@@ -105,6 +125,10 @@ export default function StudentsPageClient() {
                       <div>
                         <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{student.name}</p>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">{student.email}</p>
+                        <div className="mt-3 space-y-3">
+                          <StudentDetailEditor student={student} onSave={handleSaveStudentDetail} />
+                          {canViewDni && <DniViewer studentId={student.id} />}
+                        </div>
                       </div>
                     </div>
                     
@@ -157,6 +181,15 @@ export default function StudentsPageClient() {
                   type="email" 
                   value={editingStudent.email}
                   onChange={e => setEditingStudent({...editingStudent, email: e.target.value})}
+                  className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">DNI</label>
+                <input 
+                  type="text" 
+                  value={editingStudent.dni ?? ''}
+                  onChange={e => setEditingStudent({...editingStudent, dni: e.target.value})}
                   className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm"
                 />
               </div>
