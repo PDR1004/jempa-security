@@ -1,49 +1,349 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030303;
-  --foreground: #f4f4f5;
+  --mc-sky-top: #78a7ff;
+  --mc-sky-bottom: #c0d8ff;
+  --mc-grass: #5d8c39;
+  --mc-grass-light: #6b9e44;
+  --mc-grass-dark: #4a7530;
+  --mc-dirt: #866526;
+  --mc-dirt-dark: #6f521e;
+  --mc-stone: #7d7d7d;
+  --mc-stone-light: #8b8b8b;
+  --mc-stone-dark: #555555;
+  --mc-gui-bg: #c6c6c6;
+  --mc-gui-dark: #373737;
+  --mc-gui-slot: #8b8b8b;
+  --mc-gui-border-light: #ffffff;
+  --mc-gui-border-dark: #373737;
+  --mc-green-btn: #5cb85c;
+  --mc-green-btn-hover: #6ecf6e;
+  --mc-green-btn-dark: #3d8b3d;
+  --mc-gold: #ffd700;
+  --mc-gold-dark: #c8a800;
+  --mc-diamond: #4ee2ec;
+  --mc-red: #c0392b;
+  --mc-red-dark: #922b21;
+  --mc-text: #ffffff;
+  --mc-text-shadow: #3f3f3f;
+  --mc-text-dark: #1a1a1a;
+  --background: #1a1a2e;
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-vt323);
+  --font-mono: var(--font-press-start);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  font-family: var(--font-vt323), "Courier New", monospace;
+  font-size: 20px;
+  image-rendering: pixelated;
 }
 
+/* ── Minecraft typography ── */
+.mc-font {
+  font-family: var(--font-press-start), monospace;
+  text-shadow: 2px 2px 0 var(--mc-text-shadow);
+  letter-spacing: 0.02em;
+}
+
+.mc-font-sm {
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.55rem;
+  line-height: 1.8;
+  text-shadow: 1px 1px 0 var(--mc-text-shadow);
+}
+
+.mc-body {
+  font-family: var(--font-vt323), "Courier New", monospace;
+  font-size: 20px;
+}
+
+/* ── Backgrounds ── */
+.mc-bg-overworld {
+  background-color: var(--mc-dirt);
+  background-image:
+    linear-gradient(180deg, var(--mc-sky-top) 0%, var(--mc-sky-bottom) 35%, transparent 35%),
+    url("/mc-grass.svg");
+  background-size: auto, 64px 64px;
+  background-repeat: no-repeat, repeat;
+  background-attachment: fixed;
+}
+
+.mc-bg-cave {
+  background-color: #1a1a1a;
+  background-image: url("/mc-stone.svg");
+  background-size: 64px 64px;
+}
+
+.mc-bg-nether {
+  background-color: #3b1414;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255, 100, 0, 0.15), transparent 50%),
+    url("/mc-dirt.svg");
+  background-size: auto, 64px 64px;
+}
+
+/* ── GUI Panels (inventory/chest style) ── */
+.mc-panel {
+  background: var(--mc-gui-bg);
+  border: 4px solid var(--mc-gui-border-dark);
+  box-shadow:
+    inset 4px 4px 0 var(--mc-gui-border-light),
+    inset -4px -4px 0 #555555,
+    8px 8px 0 rgba(0, 0, 0, 0.4);
+  color: var(--mc-text-dark);
+}
+
+.mc-panel-dark {
+  background: var(--mc-gui-dark);
+  border: 4px solid #1a1a1a;
+  box-shadow:
+    inset 4px 4px 0 #555555,
+    inset -4px -4px 0 #1a1a1a,
+    8px 8px 0 rgba(0, 0, 0, 0.5);
+  color: var(--mc-text);
+}
+
+.mc-slot {
+  background: var(--mc-gui-slot);
+  border: 3px solid;
+  border-color: #373737 #ffffff #ffffff #373737;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── Buttons ── */
+.mc-btn {
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.55rem;
+  line-height: 1.6;
+  padding: 10px 16px;
+  border: 3px solid;
+  border-color: #ffffff #373737 #373737 #ffffff;
+  background: var(--mc-gui-bg);
+  color: var(--mc-text-dark);
+  cursor: pointer;
+  text-shadow: none;
+  transition: filter 0.1s, transform 0.1s;
+  image-rendering: pixelated;
+}
+
+.mc-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.mc-btn:active:not(:disabled) {
+  border-color: #373737 #ffffff #ffffff #373737;
+  transform: translateY(2px);
+}
+
+.mc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mc-btn-green {
+  background: var(--mc-green-btn);
+  border-color: #8fdf8f #2d6b2d #2d6b2d #8fdf8f;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 var(--mc-green-btn-dark);
+}
+
+.mc-btn-green:hover:not(:disabled) {
+  background: var(--mc-green-btn-hover);
+}
+
+.mc-btn-green:active:not(:disabled) {
+  border-color: #2d6b2d #8fdf8f #8fdf8f #2d6b2d;
+}
+
+.mc-btn-red {
+  background: var(--mc-red);
+  border-color: #e74c3c #7b241c #7b241c #e74c3c;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 var(--mc-red-dark);
+}
+
+.mc-btn-red:active:not(:disabled) {
+  border-color: #7b241c #e74c3c #e74c3c #7b241c;
+}
+
+.mc-btn-gold {
+  background: var(--mc-gold);
+  border-color: #ffe566 #a08000 #a08000 #ffe566;
+  color: var(--mc-text-dark);
+  text-shadow: none;
+}
+
+/* ── Header / Hotbar ── */
+.mc-header {
+  background: rgba(55, 55, 55, 0.95);
+  border-bottom: 4px solid #1a1a1a;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4);
+}
+
+.mc-hotbar-slot {
+  background: rgba(0, 0, 0, 0.6);
+  border: 3px solid;
+  border-color: #555555 #ffffff #ffffff #555555;
+  padding: 6px 12px;
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.5rem;
+  color: #aaaaaa;
+  text-shadow: 1px 1px 0 #000;
+  transition: all 0.1s;
+}
+
+.mc-hotbar-slot:hover {
+  color: #ffffff;
+  background: rgba(93, 140, 57, 0.4);
+}
+
+.mc-hotbar-slot-active {
+  background: rgba(93, 140, 57, 0.6);
+  border-color: #6b9e44 #2d4a1e #2d4a1e #6b9e44;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(93, 140, 57, 0.5);
+}
+
+/* ── Inputs ── */
+.mc-input,
 .scia-input {
   appearance: none;
-  background-color: #111a2a !important;
-  color: #e4e4e7 !important;
-  caret-color: #e4e4e7;
+  font-family: var(--font-vt323), monospace;
+  font-size: 20px;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  caret-color: #ffffff;
+  border: 3px solid;
+  border-color: #373737 #ffffff #ffffff #373737;
+  padding: 8px 12px;
+  outline: none;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
+.mc-input:focus,
 .scia-input:focus {
-  background-color: #111a2a !important;
-  color: #e4e4e7 !important;
+  border-color: var(--mc-green-btn) #2d6b2d #2d6b2d var(--mc-green-btn);
+  background-color: #111111 !important;
+  color: #ffffff !important;
 }
 
 .scia-input:-webkit-autofill,
 .scia-input:-webkit-autofill:hover,
 .scia-input:-webkit-autofill:focus,
 .scia-input:-webkit-autofill:active {
-  -webkit-text-fill-color: #e4e4e7 !important;
-  box-shadow: 0 0 0 1000px #111a2a inset !important;
-  -webkit-box-shadow: 0 0 0 1000px #111a2a inset !important;
-  caret-color: #e4e4e7;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0 1000px #000000 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #000000 inset !important;
+  caret-color: #ffffff;
   transition: background-color 5000s ease-in-out 0s;
 }
 
 .scia-input:-moz-autofill,
 .scia-input:-moz-autofill:focus {
-  box-shadow: 0 0 0 1000px #111a2a inset !important;
-  -moz-text-fill-color: #e4e4e7 !important;
-  color: #e4e4e7 !important;
+  box-shadow: 0 0 0 1000px #000000 inset !important;
+  -moz-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* ── Chat bubbles (sign/book style) ── */
+.mc-chat-user {
+  background: rgba(93, 140, 57, 0.85);
+  border: 3px solid;
+  border-color: #6b9e44 #2d4a1e #2d4a1e #6b9e44;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.mc-chat-ai {
+  background: var(--mc-gui-bg);
+  border: 3px solid;
+  border-color: #ffffff #555555 #555555 #ffffff;
+  color: var(--mc-text-dark);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── Badges & tags ── */
+.mc-badge {
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.45rem;
+  padding: 6px 10px;
+  background: rgba(93, 140, 57, 0.3);
+  border: 2px solid var(--mc-grass);
+  color: #8fdf8f;
+  text-shadow: 1px 1px 0 #2d4a1e;
+}
+
+.mc-badge-gold {
+  font-family: var(--font-vt323), monospace;
+  background: var(--mc-gold);
+  border: 2px solid var(--mc-gold-dark);
+  color: var(--mc-text-dark);
+  padding: 2px 8px;
+  text-shadow: none;
+  box-shadow: inset 1px 1px 0 #ffe566;
+}
+
+/* ── Loading dots (block animation) ── */
+.mc-loading-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--mc-grass);
+  border: 1px solid #2d4a1e;
+  animation: mc-bounce 0.6s infinite alternate;
+}
+
+.mc-loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.mc-loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes mc-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+@keyframes mc-pixel-reveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mc-pixel-reveal {
+  animation: mc-pixel-reveal 0.4s steps(4) forwards;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #373737;
+  border: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mc-gui-bg);
+  border: 2px solid;
+  border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+/* ── Error panel ── */
+.mc-error {
+  background: rgba(192, 57, 43, 0.3);
+  border: 3px solid var(--mc-red);
+  color: #ff6b6b;
+  padding: 8px 12px;
+  font-family: var(--font-vt323), monospace;
 }

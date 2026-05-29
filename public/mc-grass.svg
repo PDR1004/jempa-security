@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Grass top -->
+  <rect width="64" height="32" fill="#5D8C39"/>
+  <rect x="0" y="0" width="16" height="8" fill="#6B9E44"/>
+  <rect x="32" y="8" width="16" height="8" fill="#4A7530"/>
+  <rect x="16" y="16" width="16" height="8" fill="#6B9E44"/>
+  <rect x="48" y="0" width="16" height="16" fill="#4A7530"/>
+  <!-- Dirt bottom -->
+  <rect y="32" width="64" height="32" fill="#866526"/>
+  <rect x="8" y="40" width="16" height="8" fill="#6F521E"/>
+  <rect x="40" y="48" width="16" height="8" fill="#9A7830"/>
+  <rect x="24" y="56" width="8" height="8" fill="#6F521E"/>
+</svg>

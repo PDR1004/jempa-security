@@ -36,10 +36,8 @@ export function ScrollReveal({ children, className = "", delayMs = 0 }: ScrollRe
   return (
     <div
       ref={elementRef}
-      style={{ transitionDelay: `${delayMs}ms` }}
-      className={`will-change-transform transition-all duration-700 ease-out ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      } ${className}`}
+      style={{ transitionDelay: `${delayMs}ms`, animationDelay: `${delayMs}ms` }}
+      className={`${isVisible ? "mc-pixel-reveal opacity-100" : "opacity-0 translate-y-4"} ${className}`}
     >
       {children}
     </div>

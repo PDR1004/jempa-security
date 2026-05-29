@@ -42,7 +42,6 @@ export function DniViewer({ studentId }: DniViewerProps) {
             setDni(data.dni)
             setIsVisible(true)
 
-            // Ocultar automáticamente después de 5 segundos
             setTimeout(() => {
                 setIsVisible(false)
                 setDni(null)
@@ -56,36 +55,34 @@ export function DniViewer({ studentId }: DniViewerProps) {
     }
 
     return (
-        <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">DNI:</span>
+        <div className="flex items-center gap-2 flex-wrap">
+            <span className="mc-font-sm text-[0.4rem] text-[#aaaaaa]">DNI:</span>
             
             {isVisible && dni ? (
-                <span className="font-mono text-sm bg-yellow-100 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-100 px-2 py-0.5 rounded border border-yellow-300 dark:border-yellow-700">
+                <span className="mc-badge-gold font-mono text-lg">
                     {dni}
                 </span>
             ) : (
-                <span className="text-sm text-zinc-400 dark:text-zinc-500">••••••••</span>
+                <span className="text-lg text-[#777777]">••••••••</span>
             )}
 
             <button
                 onClick={showDni}
                 disabled={isLoading}
-                className={`
-                    px-3 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm font-medium transition-colors
-                    ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}
-                    ${error ? 'text-red-500' : 'text-zinc-600 dark:text-zinc-400'}
-                `}
+                className={`mc-btn mc-btn-gold text-[0.4rem] px-3 py-1 ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                } ${error ? 'border-[#c0392b]' : ''}`}
                 title={isVisible ? 'Ocultar DNI' : 'Mostrar DNI (5 segundos)'}
             >
                 {isLoading ? '...' : isVisible ? 'Ocultar' : 'Mostrar'}
             </button>
 
             {error && (
-                <span className="text-xs text-red-500 dark:text-red-400">{error}</span>
+                <span className="text-base text-[#ff6b6b]">{error}</span>
             )}
 
             {isVisible && (
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 animate-pulse">
+                <span className="text-base text-[#aaaaaa] animate-pulse">
                     (oculta en 5s)
                 </span>
             )}

@@ -3,12 +3,6 @@
 import { signIn, useSession } from "next-auth/react";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Manrope } from "next/font/google";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 function LoginContent() {
   const { status } = useSession();
@@ -38,119 +32,102 @@ function LoginContent() {
     signIn("google", { callbackUrl: "/chat" });
   };
 
-
   return (
-    <main className={`${manrope.className} relative flex flex-1 bg-[#020813] text-white`}>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[380px] bg-[radial-gradient(circle_at_50%_0%,rgba(22,163,74,0.2),transparent_58%)]"
-      />
-
+    <main className="relative flex flex-1 mc-bg-overworld text-white">
       {/* Columna izquierda */}
       <div className="relative hidden md:flex w-1/2 flex-col justify-center px-16 lg:px-24">
-        <h1 className="text-6xl xl:text-6xl font-extrabold leading-tight tracking-tight text-zinc-100 whitespace-nowrap">
-          Secure Campus 
-          <span className="text-emerald-400"> IA</span>
+        <div className="flex items-center gap-4 mb-6">
+          <img src="/mc-grass-block.svg" alt="" className="h-16 w-16" aria-hidden="true" />
+        </div>
+        <h1 className="mc-font text-2xl xl:text-3xl leading-relaxed text-white">
+          Secure Campus
+          <span className="text-[#8fdf8f]"> IA</span>
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-zinc-300">
+        <p className="mt-6 max-w-xl text-2xl text-white/90">
           Interactúa con un asistente virtual. Una plataforma diseñada con altos estándares de seguridad, autenticación y acceso basado en roles.
         </p>
       </div>
 
       <div className="relative flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
-        <section className="px-5 py-8 w-full max-w-sm rounded-3xl border border-zinc-700/80 bg-zinc-900/90 p-8 shadow-[0_24px_70px_-32px_rgba(0,0,0,0.95)] backdrop-blur-md">
-
-
+        <section className="w-full max-w-sm mc-panel p-8">
           <div className="flex justify-center mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-                <path
-                  d="M12 3.5 18.5 6v5.9c0 4.1-2.8 7.8-6.5 8.9-3.7-1.1-6.5-4.8-6.5-8.9V6L12 3.5Z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="mc-slot flex h-14 w-14 items-center justify-center">
+              <img src="/mc-grass-block.svg" alt="" className="h-10 w-10" aria-hidden="true" />
             </div>
           </div>
 
-          <h2 className="text-center text-2xl font-extrabold tracking-tight text-zinc-100">Bienvenido</h2>
-          <p className="text-center text-sm text-zinc-400 mt-1 mb-6">
+          <h2 className="text-center mc-font-sm text-[#1a1a1a]">Bienvenido</h2>
+          <p className="text-center text-lg text-[#555555] mt-2 mb-6">
             Accede con tu cuenta institucional para continuar.
           </p>
 
           {showAccessDenied && (
-            <div className="mb-4 rounded-lg border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-300">
+            <div className="mb-4 mc-error text-lg">
               Tu correo no está autorizado. Contacta a un administrador.
             </div>
           )}
 
           <form>
             <div className="mb-4">
-              <label className="text-xs text-zinc-400 uppercase tracking-widest mb-1 block">
+              <label className="mc-font-sm text-[0.4rem] text-[#555555] mb-2 block">
                 Correo Institucional
               </label>
-              <div className="flex items-center rounded-lg border border-zinc-700 bg-[#111a2a] px-3 py-2 focus-within:border-emerald-500/60">
-                <input
-                  type="email"
-                  placeholder="usuario@campus.edu"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="scia-input flex-1 text-sm text-zinc-100 placeholder-zinc-500 outline-none"
-                />
-              </div>
+              <input
+                type="email"
+                placeholder="usuario@campus.edu"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="scia-input w-full"
+              />
             </div>
 
             <div className="mb-6">
-              <div className="flex justify-between items-center mb-1">
-                <label className="text-xs text-zinc-400 uppercase tracking-widest">
+              <div className="flex justify-between items-center mb-2">
+                <label className="mc-font-sm text-[0.4rem] text-[#555555]">
                   Contraseña
                 </label>
-                <span className="text-xs text-zinc-400 cursor-pointer hover:text-white">
+                <span className="text-base text-[#777777] cursor-pointer hover:text-[#1a1a1a]">
                   ¿Olvidaste tu contraseña?
                 </span>
               </div>
-              <div className="flex items-center rounded-lg border border-zinc-700 bg-[#111a2a] px-3 py-2 focus-within:border-emerald-500/60">
+              <div className="flex items-center gap-2">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="scia-input flex-1 text-sm text-zinc-100 placeholder-zinc-500 outline-none"
+                  className="scia-input flex-1"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-zinc-500 hover:text-white text-xs ml-2"
+                  className="mc-btn text-[0.45rem] px-2 py-2"
                 >
                   {showPassword ? "Ocultar" : "Ver"}
                 </button>
               </div>
             </div>
 
-
             <button
               type="submit"
-              className="mb-4 w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-[#021209] transition-colors hover:bg-emerald-400"
+              className="mb-4 w-full mc-btn mc-btn-green"
             >
               Entrar
             </button>
           </form>
 
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex-1 h-px bg-zinc-700" />
-            <span className="text-xs text-zinc-500">o</span>
-            <div className="flex-1 h-px bg-zinc-700" />
+            <div className="flex-1 h-[3px] bg-[#555555]" />
+            <span className="text-base text-[#777777]">o</span>
+            <div className="flex-1 h-[3px] bg-[#555555]" />
           </div>
 
           <button
             type="button"
             disabled={isRedirecting}
             onClick={handleLoginClick}
-            className={`w-full flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-[#111a2a] px-4 py-3 text-sm font-medium transition-colors ${
-              isRedirecting
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:border-zinc-500 hover:bg-zinc-800"
+            className={`w-full flex items-center justify-center gap-2 mc-btn ${
+              isRedirecting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -162,9 +139,9 @@ function LoginContent() {
             {isRedirecting ? "Redirigiendo..." : "Continuar con Google"}
           </button>
 
-          <p className="text-center text-xs text-zinc-500 mt-4">
+          <p className="text-center text-base text-[#777777] mt-4">
             Al iniciar sesión, aceptas nuestros{" "}
-            <span className="underline cursor-pointer hover:text-white">Protocolos de Seguridad</span>.
+            <span className="underline cursor-pointer hover:text-[#1a1a1a]">Protocolos de Seguridad</span>.
           </p>
         </section>
       </div>
@@ -175,8 +152,8 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className={`${manrope.className} flex flex-1 items-center justify-center bg-[#020813]`}>
-        <p className="text-white">Cargando...</p>
+      <div className="flex flex-1 items-center justify-center mc-bg-cave">
+        <p className="mc-font-sm text-white">Cargando...</p>
       </div>
     }>
       <LoginContent />
