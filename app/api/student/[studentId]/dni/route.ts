@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validatePermission } from "@/app/lib/auth/authHelpers";
-import { findRegisteredUserById } from "@/app/lib/auth/registeredUsers";
+import { findRegisteredUserById, getDecryptedUserDni } from "@/app/lib/auth/registeredUsers";
 
 export async function GET(
   req: Request,
@@ -11,7 +11,7 @@ export async function GET(
 
     const { studentId } = await context.params;
     const studentIdNumber = Number(studentId);
-    if (Number.isNaN(studentId)) {
+    if (Number.isNaN(studentIdNumber)) {
       return NextResponse.json(
         { error: "ID de estudiante inválido" },
         { status: 400 },
@@ -26,7 +26,10 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ dni: student.dni ?? null });
+    // Obtener el DNI desencriptado usando la función RPC
+    const decryptedDni = await getDecryptedUserDni(studentIdNumber);
+
+    return NextResponse.json({ dni: decryptedDni });
   } catch (error: unknown) {
     console.error("Error en API DNI estudiante:", error);
     const message = error instanceof Error ? error.message : "Error interno del servidor";

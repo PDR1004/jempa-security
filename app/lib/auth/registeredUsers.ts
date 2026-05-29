@@ -19,10 +19,10 @@ interface UserRow {
   role: AppRole;
   active: boolean;
   detail?: string;
-  dni?: string;
+  dni_encrypted?: string;
 }
 
-const USER_COLUMNS = "id, name, email, role, active, detail, dni";
+const USER_COLUMNS = "id, name, email, role, active, detail, dni_encrypted";
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase();
 
@@ -33,8 +33,26 @@ const mapRow = (row: UserRow): RegisteredUser => ({
   role: row.role,
   active: row.active,
   detail: row.detail ?? undefined,
-  dni: row.dni ?? undefined,
 });
+
+const decryptUserDni = async (id: number): Promise<string | undefined> => {
+  const encryptionKey = process.env.DNI_ENCRYPTION_KEY;
+  if (!encryptionKey) {
+    throw new Error("DNI_ENCRYPTION_KEY no configurada en variables de entorno");
+  }
+
+  const { data, error } = await supabaseAdmin.rpc("get_user_dni_secure", {
+    p_user_id: id,
+    p_encryption_key: encryptionKey,
+  });
+
+  if (error) {
+    console.error("Error desencriptando DNI:", error);
+    return undefined;
+  }
+
+  return (data as string) ?? undefined;
+};
 
 export const getRegisteredUsers = async (): Promise<RegisteredUser[]> => {
   const { data, error } = await supabaseAdmin
@@ -47,7 +65,14 @@ export const getRegisteredUsers = async (): Promise<RegisteredUser[]> => {
     throw new Error(`No se pudieron cargar los usuarios en registro: ${error.message}`);
   }
 
-  return (data ?? []).map(mapRow);
+  const users = (data ?? []) as UserRow[];
+  return await Promise.all(
+    users.map(async (row) => {
+      const user = mapRow(row);
+      user.dni = await decryptUserDni(user.id);
+      return user;
+    }),
+  );
 };
 
 export const findRegisteredUserByEmail = async (
@@ -69,7 +94,13 @@ export const findRegisteredUserByEmail = async (
     throw new Error(`No se pudo buscar el usuario por email: ${error.message}`);
   }
 
-  return data ? mapRow(data) : undefined;
+  if (!data) {
+    return undefined;
+  }
+
+  const user = mapRow(data);
+  user.dni = await decryptUserDni(user.id);
+  return user;
 };
 
 export const findRegisteredUserById = async (
@@ -85,7 +116,13 @@ export const findRegisteredUserById = async (
     throw new Error(`No se pudo buscar el usuario por ID: ${error.message}`);
   }
 
-  return data ? mapRow(data) : undefined;
+  if (!data) {
+    return undefined;
+  }
+
+  const user = mapRow(data);
+  user.dni = await decryptUserDni(user.id);
+  return user;
 };
 
 export const updateRegisteredUser = async (
@@ -100,10 +137,6 @@ export const updateRegisteredUser = async (
 
   if (patch.detail !== undefined) {
     updateData.detail = patch.detail;
-  }
-
-  if (patch.dni !== undefined) {
-    updateData.dni = patch.dni;
   }
 
   const executeUpdate = async (dataToUpdate: Record<string, unknown>) => {
@@ -126,8 +159,29 @@ export const updateRegisteredUser = async (
   };
 
   try {
+    // Actualizar nombre, email, active y detail
     const data = await executeUpdate(updateData);
-    return mapRow(data);
+    
+    if (patch.dni !== undefined) {
+      const encryptionKey = process.env.DNI_ENCRYPTION_KEY;
+      if (!encryptionKey) {
+        throw new Error("DNI_ENCRYPTION_KEY no configurada en variables de entorno");
+      }
+
+      const { error: dniError } = await supabaseAdmin.rpc("update_user_dni_secure", {
+        p_user_id: id,
+        p_dni: patch.dni,
+        p_encryption_key: encryptionKey,
+      });
+
+      if (dniError) {
+        throw new Error(`Error actualizando DNI: ${dniError.message}`);
+      }
+    }
+
+    const user = mapRow(data);
+    user.dni = await decryptUserDni(id);
+    return user;
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error
@@ -145,17 +199,28 @@ export const updateRegisteredUser = async (
       return mapRow(data);
     }
 
-    if (
-      patch.dni !== undefined &&
-      errorMessage.toLowerCase().includes("dni does not exist")
-    ) {
-      delete updateData.dni;
-      const data = await executeUpdate(updateData);
-      return mapRow(data);
-    }
-
     throw new Error(`No se pudo actualizar el usuario: ${errorMessage}`);
   }
+};
+
+// Función helper para desencriptar el DNI
+export const getDecryptedUserDni = async (id: number): Promise<string | null> => {
+  const encryptionKey = process.env.DNI_ENCRYPTION_KEY;
+  if (!encryptionKey) {
+    throw new Error("DNI_ENCRYPTION_KEY no configurada en variables de entorno");
+  }
+
+  const { data, error } = await supabaseAdmin.rpc("get_user_dni_secure", {
+    p_user_id: id,
+    p_encryption_key: encryptionKey,
+  });
+
+  if (error) {
+    console.error("Error desencriptando DNI:", error);
+    return null;
+  }
+
+  return data ?? null;
 };
 
 export const deleteRegisteredUser = async (id: number): Promise<void> => {
