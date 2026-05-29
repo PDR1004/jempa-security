@@ -3,8 +3,10 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS pgaudit;
 
 -- 2. Configurar la auditoría forense (PGAudit)
--- PostgreSQL registrará automáticamente en sus logs internos cada INSERT, UPDATE o DELETE
---ALTER DATABASE postgres SET pgaudit.log = 'write';
+-- PostgreSQL registrará automáticamente en sus logs internos cada SELECT/INSERT/UPDATE/DELETE/DDL
+ALTER DATABASE postgres SET pgaudit.log = 'read, write, ddl, role';
+ALTER DATABASE postgres SET pgaudit.log_catalog = 'off';
+ALTER DATABASE postgres SET pgaudit.log_parameter = 'off';
 
 -- 3. Función segura para REGISTRAR usuarios  (Encripta la contraseña al vuelo)
 CREATE OR REPLACE FUNCTION register_user_secure(
